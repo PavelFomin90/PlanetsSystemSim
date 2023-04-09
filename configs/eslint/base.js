@@ -7,7 +7,7 @@ module.exports = {
 
     parser: '@babel/eslint-parser',
 
-    plugins: ['react'],
+    plugins: [],
 
     env: {
         browser: true,
@@ -17,24 +17,9 @@ module.exports = {
         node: true,
     },
 
-    parserOptions: {
-        sourceType: 'module',
-        requireConfigFile: false,
-        babelOptions: {
-            presets: [require.resolve('babel-preset-react-app/prod')],
-        },
-    },
+    settings: {},
 
-    settings: {
-        react: {
-            version: 'detect',
-        },
-    },
-
-    rules: {
-        'react/jsx-uses-vars': 'warn',
-        'react/jsx-uses-react': 'warn',
-    },
+    rules: {},
 
     ignorePatterns: [
         'node_modules/'

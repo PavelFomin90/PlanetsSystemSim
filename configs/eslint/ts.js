@@ -3,7 +3,7 @@
 module.exports = {
     parser: require.resolve('@typescript-eslint/parser'),
     parserOptions: {
-        project: ['./tsconfig.json', './packages/**/tsconfig.json', './apps/**/tsconfig.json'],
+        project: ['./tsconfig.json'],
 
         ecmaVersion: 2018,
         sourceType: 'module',
@@ -26,7 +26,7 @@ module.exports = {
         },
         'import/resolver': {
             typescript: {
-                project: ['./tsconfig.json', './packages/**/tsconfig.json', './apps/**/tsconfig.json'],
+                project: ['./tsconfig.json'],
             }
         }
     },
