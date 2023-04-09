@@ -65,6 +65,11 @@ if (canvas) {
   canvas.width = window.innerWidth - 4;
   canvas.height = window.innerHeight - 4;
 
+  window.addEventListener("resize", () => {
+    canvas.width = window.innerWidth - 4;
+    canvas.height = window.innerHeight - 4;
+  });
+
   const ctx = canvas.getContext("2d");
 
   const translateInstance = new TranslateController({

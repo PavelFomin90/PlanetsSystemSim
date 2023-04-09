@@ -16,6 +16,7 @@ const INTERVAL_TIME = 20;
 class TranslateController implements ITranslateController {
   scale = 0.2;
   translate = { x: 0, y: 0 };
+  private initialScale = 0.2;
 
   private static _instance: TranslateController;
   private interval: ReturnType<typeof setInterval> | undefined;
@@ -26,6 +27,7 @@ class TranslateController implements ITranslateController {
     }
 
     this.scale = props.initialScale;
+    this.initialScale = props.initialScale;
     this.translate = props.initialTranslate;
 
     this.setListner();
@@ -68,77 +70,157 @@ class TranslateController implements ITranslateController {
     this.scaleFunction(-0.01);
   };
 
-  private moveLeft = () => {
+  private resetScale = () => {
+    this.scale = this.initialScale;
+  };
+
+  private moveX = (deltaX: number) => {
     this.interval && clearInterval(this.interval);
     const initialTranslateX = this.translate.x;
 
-    this.interval = setInterval(() => {
-      this.translate.x = round(this.translate.x - 2);
-      if (this.translate.x <= initialTranslateX - 20) {
-        clearInterval(this.interval);
-      }
-    }, INTERVAL_TIME);
+    if (deltaX > 0) {
+      this.interval = setInterval(() => {
+        this.translate.x = round(this.translate.x + deltaX / 10);
+        if (this.translate.x >= initialTranslateX + deltaX) {
+          clearInterval(this.interval);
+        }
+      }, INTERVAL_TIME);
+    } else {
+      this.interval = setInterval(() => {
+        this.translate.x = round(this.translate.x + deltaX / 10);
+        if (this.translate.x <= initialTranslateX + deltaX) {
+          clearInterval(this.interval);
+        }
+      }, INTERVAL_TIME);
+    }
+  };
+
+  private moveY = (deltaY: number) => {
+    this.interval && clearInterval(this.interval);
+    const initialTranslateY = this.translate.y;
+
+    if (deltaY > 0) {
+      this.interval = setInterval(() => {
+        this.translate.y = round(this.translate.y + deltaY / 10);
+        if (this.translate.y >= initialTranslateY + deltaY) {
+          clearInterval(this.interval);
+        }
+      }, INTERVAL_TIME);
+    } else {
+      this.interval = setInterval(() => {
+        this.translate.y = round(this.translate.y + deltaY / 10);
+        if (this.translate.y <= initialTranslateY + deltaY) {
+          clearInterval(this.interval);
+        }
+      }, INTERVAL_TIME);
+    }
+  };
+
+  private moveLeft = () => {
+    this.moveX(-20);
   };
 
   private moveRight = () => {
-    this.interval && clearInterval(this.interval);
-    const initialTranslateX = this.translate.x;
-
-    this.interval = setInterval(() => {
-      this.translate.x = round(this.translate.x + 2);
-      if (this.translate.x >= initialTranslateX + 20) {
-        clearInterval(this.interval);
-      }
-    }, INTERVAL_TIME);
+    this.moveX(20);
   };
 
   private moveTop = () => {
-    this.interval && clearInterval(this.interval);
-    const initialTranslateY = this.translate.y;
-
-    this.interval = setInterval(() => {
-      this.translate.y = round(this.translate.y + 2);
-      if (this.translate.y >= initialTranslateY + 20) {
-        clearInterval(this.interval);
-      }
-    }, 20);
+    this.moveY(20);
   };
 
   private moveDown = () => {
-    this.interval && clearInterval(this.interval);
-    const initialTranslateY = this.translate.y;
-
-    this.interval = setInterval(() => {
-      this.translate.y = round(this.translate.y - 2);
-      if (this.translate.y <= initialTranslateY - 20) {
-        clearInterval(this.interval);
-      }
-    }, 20);
+    this.moveY(-20);
   };
 
-  private scaleWithMouse = (deltaY: number) => {
+  private scaleWithMouse = (deltaScale: number) => {
     let scaleDelta;
-    const invertDeltaY = deltaY * -1;
 
-    if (deltaY > 0) {
-      scaleDelta = Math.max(0.02, invertDeltaY / 20000);
+    if (deltaScale > 0) {
+      scaleDelta = Math.min(0.02, deltaScale / 10000);
     } else {
-      scaleDelta = Math.min(-0.02, invertDeltaY / 20000);
+      scaleDelta = Math.max(-0.02, deltaScale / 10000);
     }
 
     this.scaleFunction(scaleDelta);
   };
 
+  private moveWithMouse = (deltaX: number, deltaY: number) => {
+    let xDelta: number;
+    let yDelta: number;
+
+    if (deltaX > 0) {
+      xDelta = Math.min(50, deltaX * 5);
+    } else {
+      xDelta = Math.max(-50, deltaX * 5);
+    }
+
+    if (deltaY > 0) {
+      yDelta = Math.min(50, deltaY * 5);
+    } else {
+      yDelta = Math.max(-50, deltaY * 5);
+    }
+
+    this.translate.x = this.translate.x + xDelta;
+    this.translate.y = this.translate.y + yDelta;
+  };
+
   private setListner = () => {
-    const throttledScale = throttle<number>((deltaY) => {
-      deltaY && this.scaleWithMouse(deltaY);
-    }, 200);
+    let prevX: number | undefined;
+    let prevY: number | undefined;
+    let mouseMoveTimeout: ReturnType<typeof setTimeout>;
+
+    const throttleMove = throttle<{ deltaX: number; deltaY: number }>(
+      (args) => {
+        if (!args) {
+          return;
+        }
+
+        const { deltaX, deltaY } = args;
+
+        this.moveWithMouse(deltaX, deltaY);
+      },
+      INTERVAL_TIME
+    );
+
+    const mouseMoveListner = (e: MouseEvent) => {
+      if (!prevX || !prevY) {
+        prevX = e.clientX;
+        prevY = e.clientY;
+        return;
+      }
+
+      if (mouseMoveTimeout) {
+        clearTimeout(mouseMoveTimeout);
+      }
+
+      const deltaX = e.clientX - prevX;
+      const deltaY = e.clientY - prevY;
+
+      prevX = e.clientX;
+      prevY = e.clientY;
+
+      throttleMove({ deltaX, deltaY });
+    };
+
+    const throttledScale = throttle<number>((deltaScale) => {
+      deltaScale && this.scaleWithMouse(deltaScale);
+    }, 20);
+
+    document.addEventListener("mousedown", () => {
+      document.addEventListener("mousemove", mouseMoveListner);
+    });
+
+    document.addEventListener("mouseup", () => {
+      prevX = undefined;
+      prevY = undefined;
+      document.removeEventListener("mousemove", mouseMoveListner);
+    });
 
     document.addEventListener("wheel", (e) => {
       throttledScale(e.deltaY);
     });
     document.addEventListener("keydown", (e) => {
-      switch (e.keyCode) {
+      switch (e.which) {
         case 81:
           this.scaleOut();
           break;
@@ -156,6 +238,9 @@ class TranslateController implements ITranslateController {
           break;
         case 40:
           this.moveDown();
+          break;
+        case 82:
+          this.resetScale();
           break;
         default:
           clearInterval(this.interval);
