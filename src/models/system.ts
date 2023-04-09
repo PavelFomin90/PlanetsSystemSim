@@ -1,20 +1,20 @@
 import { IDot } from "./dot";
 
 interface ISystem {
-    planets: IDot[];
-    addPlanet: (planet: IDot) => void;
+  planets: IDot[];
+  addPlanet: (planet: IDot) => void;
 }
 
 class System implements ISystem {
-    planets: IDot[];
+  planets: IDot[];
 
-    constructor() {
-        this.planets = [];
-    }
+  constructor() {
+    this.planets = [];
+  }
 
-    addPlanet(planet: IDot) {
-        this.planets.push(planet);
-    }
+  addPlanet(planet: IDot) {
+    this.planets.push(planet);
+  }
 }
 
 export { System };

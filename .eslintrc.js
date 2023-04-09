@@ -1,5 +1,5 @@
 module.exports = {
-    extends: 'eslint:recommended',
+    extends: ['./configs/eslint/index.js'],
     overrides: [
       {
         files: ['*.config.ts'],
