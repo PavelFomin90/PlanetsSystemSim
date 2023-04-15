@@ -1,10 +1,9 @@
 {
     "typescript.tsdk": "node_modules/typescript/lib",
-    "eslint.autoFixOnSave": true,
     "editor.codeActionsOnSave": {
       "source.fixAll.eslint": true
     },
     "eslint.validate": ["javascript", "typescript"],
-    "eslint.options": { "configFile": ".eslintrc.js" },
+    "eslint.options": { "overrideConfigFile": ".eslintrc.js" },
     "eslint.enable": true
 }

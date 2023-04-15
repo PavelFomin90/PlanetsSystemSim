@@ -5,6 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "start": "webpack serve --mode none",
+    "build": "webpack --mode production",
     "eslint": "eslint -c .eslintrc.js --ext .ts 'src'",
     "eslint:fix": "eslint -c .eslintrc.js --fix --ext .ts 'src'"
   },
