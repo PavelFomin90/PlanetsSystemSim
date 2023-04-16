@@ -38,7 +38,7 @@ const upiter = new Dot({
   name: "upiter",
 });
 const upiterMoon = new Dot({
-  coords: { x: 1270, y: 100 },
+  coords: { x: 1270, y: 130 },
   mass: 1,
   velocity: new Vector(5.5, 180),
   acceleration: new Vector(0, 0),
@@ -48,7 +48,7 @@ const upiterMoon = new Dot({
 const upiterMoon2 = new Dot({
   coords: { x: 1270, y: -200 },
   mass: 1,
-  velocity: new Vector(6.5, 180),
+  velocity: new Vector(6.8, 180),
   acceleration: new Vector(0, 0),
   color: "red",
   name: "upiterMoon2",
