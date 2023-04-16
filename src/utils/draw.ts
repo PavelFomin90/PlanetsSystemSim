@@ -1,4 +1,4 @@
-import type { IDot } from "../models/dot";
+import type { ICoords, IDot } from "../models/dot";
 
 const drawOrbit = (
   ctx: CanvasRenderingContext2D,
@@ -7,9 +7,15 @@ const drawOrbit = (
 ) => {
   ctx.beginPath();
   const prevCoords = object.prevCoords;
+  const parent = object.parent;
+  const parentPrevCoords =
+    parent && parent?.prevCoords?.length ? parent.prevCoords : [{ x: 0, y: 0 }];
   const { x: currentX, y: currentY } = object.coords;
+  const newPrevCoord = [] as ICoords[];
+
   prevCoords.forEach((prevCoord, i) => {
     const { x, y } = prevCoord;
+
     if (i > 0) {
       const prevX = prevCoords[i - 1].x;
       const prevY = prevCoords[i - 1].y;
@@ -18,6 +24,7 @@ const drawOrbit = (
       ctx.lineTo(x, y);
     }
   });
+
   if (prevCoords[0]) {
     const gradient = ctx.createLinearGradient(
       object.coords.x,
@@ -27,13 +34,32 @@ const drawOrbit = (
     );
     gradient.addColorStop(0, color);
     gradient.addColorStop(1, color);
-    ctx.strokeStyle = gradient;
+    ctx.strokeStyle = color;
     ctx.stroke();
   }
   ctx.closePath();
+  if (prevCoords.length && object.name !== "sun") {
+    prevCoords.forEach((prevCoord, i) => {
+      if (parent) {
+        const { x, y } = prevCoord;
+        const { x: parentX, y: parentY } = parent.coords;
+        const { x: ppX, y: ppY } =
+          parentPrevCoords[parentPrevCoords.length - 2];
+        newPrevCoord[i] = {
+          x: x + (parentX - ppX),
+          y: y + (parentY - ppY),
+        };
+      }
+    });
+  }
+
+  if (newPrevCoord.length && object.name !== "sun") {
+    object.setPrevCoords(newPrevCoord);
+  }
+
   object.addPrevCoord({ x: currentX, y: currentY });
 
-  if (prevCoords.length > 150) {
+  if (prevCoords.length > 100) {
     object.prevCoords.shift();
   }
 };
