@@ -2,7 +2,7 @@ import { toDegrees, toRadians } from "../utils/math";
 
 import { IVector, Vector } from "./vector";
 
-interface ICoords {
+export interface ICoords {
   x: number;
   y: number;
 }
@@ -16,9 +16,14 @@ interface IDot {
   radius: number;
   move: () => void;
   accelerate: () => void;
+  name: string;
   prevCoords: ICoords[];
+  parent: IDot | null;
   addPrevCoord: (value: ICoords) => void;
-  computeGravityForce: (planets: IDot[]) => Vector;
+  setPrevCoords: (value: ICoords[]) => void;
+  setParent: (parent: IDot) => void;
+  computeGravityForce: (planet: IDot) => Vector;
+  computeGravityForcesVector: (planets: IDot[]) => Vector;
 }
 
 interface IDotStartProps {
@@ -28,6 +33,7 @@ interface IDotStartProps {
   mass?: number;
   color?: string;
   radius?: number;
+  name: string;
 }
 
 class Dot implements IDot {
@@ -38,9 +44,11 @@ class Dot implements IDot {
   color: string;
   radius: number;
   prevCoords: ICoords[];
+  parent: IDot | null;
+  name: string;
 
   constructor(props: IDotStartProps) {
-    const { coords, velocity, acceleration, mass, color, radius } = props;
+    const { coords, velocity, acceleration, mass, color, radius, name } = props;
 
     this.coords = coords || { x: 0, y: 0 };
     this.velocity = velocity || new Vector(0, 0);
@@ -49,6 +57,8 @@ class Dot implements IDot {
     this.color = color || "green";
     this.radius = radius || 15;
     this.prevCoords = [];
+    this.parent = null;
+    this.name = name;
   }
 
   get x() {
@@ -61,6 +71,14 @@ class Dot implements IDot {
 
   addPrevCoord(value: ICoords) {
     this.prevCoords.push(value);
+  }
+
+  setPrevCoords(value: ICoords[]) {
+    this.prevCoords = value;
+  }
+
+  setParent(parent: IDot) {
+    this.parent = parent;
   }
 
   move() {
@@ -76,29 +94,37 @@ class Dot implements IDot {
     this.velocity.addVector(this.acceleration);
   }
 
-  computeGravityForce(planets: IDot[]) {
+  computeGravityForce(planet: IDot) {
     const GRAVCONST = 1;
     const { x, y } = this.coords;
-    let tempVector = new Vector();
+
+    const distance = Math.sqrt(
+      Math.pow(x - planet.coords.x, 2) + Math.pow(y - planet.coords.y, 2)
+    );
+    const length = (GRAVCONST * planet.mass) / Math.pow(distance, 2);
+    const angle = toDegrees(
+      Math.atan2(planet.coords.y - y, planet.coords.x - x)
+    );
+
+    return new Vector(length, angle);
+  }
+
+  computeGravityForcesVector(planets: IDot[]) {
+    const gravityForcesSumVector = new Vector();
+    let maxVector = new Vector();
+
     planets.forEach((planet, _index) => {
       if (planet !== this) {
-        const distance = Math.sqrt(
-          Math.pow(x - planet.coords.x, 2) + Math.pow(y - planet.coords.y, 2)
-        );
-        const length = (GRAVCONST * planet.mass) / Math.pow(distance, 2);
-        const angle = toDegrees(
-          Math.atan2(planet.coords.y - y, planet.coords.x - x)
-        );
-
-        if (!tempVector) {
-          tempVector = new Vector(length, angle);
-        } else {
-          tempVector.addVector(new Vector(length, angle));
+        const gravityVector = this.computeGravityForce(planet);
+        if (gravityVector.length > maxVector.length) {
+          this.setParent(planet);
+          maxVector = gravityVector;
         }
+        gravityForcesSumVector.addVector(gravityVector);
       }
     });
 
-    return tempVector;
+    return gravityForcesSumVector;
   }
 }
 

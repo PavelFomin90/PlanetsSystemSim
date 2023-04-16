@@ -11,6 +11,7 @@ const earth = new Dot({
   velocity: new Vector(6, 180),
   acceleration: new Vector(0, 0),
   color: "green",
+  name: "earth",
 });
 const moon = new Dot({
   coords: { x: 1220, y: 1900 },
@@ -18,14 +19,14 @@ const moon = new Dot({
   velocity: new Vector(8, 180),
   acceleration: new Vector(0, 0),
   color: "grey",
+  name: "moon",
 });
 const sun = new Dot({
   coords: { x: 1250, y: 2550 },
   mass: 32550,
-  velocity: new Vector(0, 0),
-  acceleration: new Vector(0, 0),
   color: "orange",
   radius: 100,
+  name: "sun",
 });
 const upiter = new Dot({
   coords: { x: 1250, y: -100 },
@@ -34,6 +35,7 @@ const upiter = new Dot({
   acceleration: new Vector(0, 0),
   color: "brown",
   radius: 60,
+  name: "upiter",
 });
 const upiterMoon = new Dot({
   coords: { x: 1270, y: 100 },
@@ -41,6 +43,7 @@ const upiterMoon = new Dot({
   velocity: new Vector(5.5, 180),
   acceleration: new Vector(0, 0),
   color: "grey",
+  name: "upiterMoon1",
 });
 const upiterMoon2 = new Dot({
   coords: { x: 1270, y: -200 },
@@ -48,6 +51,7 @@ const upiterMoon2 = new Dot({
   velocity: new Vector(6.5, 180),
   acceleration: new Vector(0, 0),
   color: "red",
+  name: "upiterMoon2",
 });
 
 const system = new System();
@@ -105,7 +109,7 @@ if (canvas) {
   setInterval(() => {
     system.planets.forEach((planet) => {
       planet.move();
-      planet.acceleration = planet.computeGravityForce(system.planets);
+      planet.acceleration = planet.computeGravityForcesVector(system.planets);
       planet.accelerate();
     });
   }, 30);
