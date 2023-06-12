@@ -1,67 +1,16 @@
 import { TranslateController } from "./controller/translateController";
-import { Dot } from "./models/dot";
+import { planets } from "./initData";
+import { ICoords, IDot } from "./models/dot";
 import { System } from "./models/system";
-import { Vector } from "./models/vector";
-import { drawDot, drawOrbit } from "./utils/draw";
-
-// Начальные координаты, масса, вектор скорости и вектор ускорения
-const earth = new Dot({
-  coords: { x: 1240, y: 1400 },
-  mass: 90,
-  velocity: new Vector(6, 180),
-  acceleration: new Vector(0, 0),
-  color: "green",
-  name: "earth",
-});
-const moon = new Dot({
-  coords: { x: 1220, y: 1900 },
-  mass: 10,
-  velocity: new Vector(8, 180),
-  acceleration: new Vector(0, 0),
-  color: "grey",
-  name: "moon",
-});
-const sun = new Dot({
-  coords: { x: 1250, y: 2550 },
-  mass: 32550,
-  color: "orange",
-  radius: 100,
-  name: "sun",
-});
-const upiter = new Dot({
-  coords: { x: 1250, y: -100 },
-  mass: 1000,
-  velocity: new Vector(3.5, 180),
-  acceleration: new Vector(0, 0),
-  color: "brown",
-  radius: 60,
-  name: "upiter",
-});
-const upiterMoon = new Dot({
-  coords: { x: 1270, y: 130 },
-  mass: 1,
-  velocity: new Vector(5.5, 180),
-  acceleration: new Vector(0, 0),
-  color: "grey",
-  name: "upiterMoon1",
-});
-const upiterMoon2 = new Dot({
-  coords: { x: 1270, y: -200 },
-  mass: 1,
-  velocity: new Vector(6.8, 180),
-  acceleration: new Vector(0, 0),
-  color: "red",
-  name: "upiterMoon2",
-});
+import { Tracker } from "./models/tracker";
+import { drawDot, drawOrbit } from "./utils/canvas/draw";
+import { getCanvasClickCoors } from "./utils/canvas/handlers";
 
 const system = new System();
 
-system.addPlanet(sun);
-system.addPlanet(earth);
-system.addPlanet(moon);
-system.addPlanet(upiter);
-system.addPlanet(upiterMoon);
-system.addPlanet(upiterMoon2);
+planets.forEach((planet) => {
+  system.addPlanet(planet);
+});
 
 const canvas: HTMLCanvasElement | null = document.querySelector("#canvas");
 
@@ -76,9 +25,47 @@ if (canvas) {
 
   const ctx = canvas.getContext("2d");
 
+  canvas.addEventListener("click", (e) => {
+    getCanvasClickCoors(e);
+  });
+
   const translateInstance = new TranslateController({
+    context: ctx,
     initialScale: 0.2,
     initialTranslate: { x: 0, y: 0 },
+  });
+
+  const trackerInstance = new Tracker();
+
+  const checkPlanetClick = (planet: IDot, clickCoords: ICoords) => {
+    const planetCoord = planet.coords;
+    const planetRadius = planet.radius;
+
+    if (
+      clickCoords.x <= planetCoord.x + planetRadius &&
+      clickCoords.x >= planetCoord.x - planetRadius &&
+      clickCoords.y <= planetCoord.y + planetRadius &&
+      clickCoords.y >= planetCoord.y - planetRadius
+    ) {
+      return true;
+    }
+
+    return false;
+  };
+
+  canvas.addEventListener("mousedown", (e: MouseEvent) => {
+    const coords = getCanvasClickCoors(e);
+    if (!coords) return;
+
+    system.planets.forEach((planet) => {
+      if (checkPlanetClick(planet, coords)) {
+        trackerInstance.track(planet);
+      } else {
+        if (trackerInstance.trackObject === planet) {
+          trackerInstance.resetTracker();
+        }
+      }
+    });
   });
 
   const draw = () => {
@@ -86,15 +73,7 @@ if (canvas) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-      ctx.setTransform(
-        translateInstance.scale,
-        0,
-        0,
-        translateInstance.scale,
-        translateInstance.translate.x,
-        translateInstance.translate.y
-      );
+      translateInstance.makeTrasform();
 
       system.planets.forEach((planet) => {
         drawDot(ctx, planet, planet.color);

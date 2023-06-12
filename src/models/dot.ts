@@ -128,4 +128,4 @@ class Dot implements IDot {
   }
 }
 
-export { Dot, IDot };
+export { Dot, IDot, IDotStartProps };

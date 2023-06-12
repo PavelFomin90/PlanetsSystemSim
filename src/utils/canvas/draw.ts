@@ -1,4 +1,4 @@
-import type { ICoords, IDot } from "../models/dot";
+import type { ICoords, IDot } from "../../models/dot";
 
 const drawOrbit = (
   ctx: CanvasRenderingContext2D,
