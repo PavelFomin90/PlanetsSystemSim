@@ -1,14 +1,18 @@
+import { ICoords } from "../models/dot";
 import { round } from "../utils/math";
 import { throttle } from "../utils/throttle";
 
 interface ITranslateController {
   scale: number;
-  translate: { x: number; y: number };
+  translate: ICoords;
+  setTranslate: (coords: ICoords) => void;
+  makeTrasform: () => void;
 }
 
 interface ITranslateControllerProps {
+  context: CanvasRenderingContext2D | null;
   initialScale: number;
-  initialTranslate: { x: number; y: number };
+  initialTranslate: ICoords;
 }
 
 const INTERVAL_TIME = 20;
@@ -16,24 +20,48 @@ const INTERVAL_TIME = 20;
 class TranslateController implements ITranslateController {
   scale = 0.2;
   translate = { x: 0, y: 0 };
+  private context: CanvasRenderingContext2D | null = null;
   private initialScale = 0.2;
 
   private static _instance: TranslateController;
   private interval: ReturnType<typeof setInterval> | undefined;
 
-  constructor(props: ITranslateControllerProps) {
+  constructor(props?: ITranslateControllerProps) {
     if (TranslateController._instance) {
       return TranslateController._instance;
     }
 
-    this.scale = props.initialScale;
-    this.initialScale = props.initialScale;
-    this.translate = props.initialTranslate;
+    if (props) {
+      this.context = props.context;
+      this.scale = props.initialScale;
+      this.initialScale = props.initialScale;
+      this.translate = props.initialTranslate;
+    } else {
+      console.error("TranslateController: props was not provided");
+    }
 
     this.setListner();
 
     TranslateController._instance = this;
   }
+
+  public setTranslate = (coords: ICoords) => {
+    this.translate.x = coords.x;
+    this.translate.y = coords.y;
+  };
+
+  public makeTrasform = () => {
+    if (this.context) {
+      this.context.setTransform(
+        round(this.scale, 4),
+        0,
+        0,
+        round(this.scale, 4),
+        round(this.translate.x, 2),
+        round(this.translate.y, 2)
+      );
+    }
+  };
 
   private scaleFunction = (scaleDelta: number) => {
     this.interval && clearInterval(this.interval);
@@ -81,6 +109,7 @@ class TranslateController implements ITranslateController {
     if (deltaX > 0) {
       this.interval = setInterval(() => {
         this.translate.x = round(this.translate.x + deltaX / 10);
+
         if (this.translate.x >= initialTranslateX + deltaX) {
           clearInterval(this.interval);
         }
