@@ -3,10 +3,11 @@ import { planets } from "./initData";
 import { ICoords, IDot } from "./models/dot";
 import { System } from "./models/system";
 import { Tracker } from "./models/tracker";
-import { drawDot, drawOrbit } from "./utils/canvas/draw";
+import { Drawer } from "./models/draw";
 import { getCanvasClickCoors } from "./utils/canvas/handlers";
 
 const system = new System();
+const drawer = new Drawer(null); // Создаем экземпляр Drawer с контекстом холста, который будет установлен позже
 
 planets.forEach((planet) => {
   system.addPlanet(planet);
@@ -15,6 +16,11 @@ planets.forEach((planet) => {
 const canvas: HTMLCanvasElement | null = document.querySelector("#canvas");
 
 if (canvas) {
+  const ctx = canvas.getContext("2d");
+  if (!ctx) throw new Error("Could not get the 2D context from the canvas.");
+
+  drawer.setContext(ctx);
+
   canvas.width = window.innerWidth - 4;
   canvas.height = window.innerHeight - 4;
 
@@ -22,8 +28,6 @@ if (canvas) {
     canvas.width = window.innerWidth - 4;
     canvas.height = window.innerHeight - 4;
   });
-
-  const ctx = canvas.getContext("2d");
 
   canvas.addEventListener("click", (e) => {
     getCanvasClickCoors(e);
@@ -71,13 +75,13 @@ if (canvas) {
   const draw = () => {
     if (ctx) {
       ctx.setTransform(1, 0, 0, 1, 0, 0);
-
       ctx.clearRect(0, 0, canvas.width, canvas.height);
+      drawer.drawBackground();
       translateInstance.makeTrasform();
 
       system.planets.forEach((planet) => {
-        drawDot(ctx, planet, planet.color);
-        drawOrbit(ctx, planet, planet.color);
+        drawer.drawDot(planet, planet.color);
+        drawer.drawOrbit(planet, planet.color);
       });
     }
 

@@ -2,6 +2,15 @@ import { ICoords } from "../models/dot";
 import { round } from "../utils/math";
 import { throttle } from "../utils/throttle";
 
+/**
+ * Интерфейс для управления трансформацией (масштаб и смещение).
+ * 
+ * @interface ITranslateController
+ * @property {number} scale - Текущий масштаб.
+ * @property {ICoords} translate - Координаты смещения.
+ * @method setTranslate - Устанавливает новые координаты смещения.
+ * @method makeTrasform - Применяет трансформацию к Canvas.
+ */
 interface ITranslateController {
   scale: number;
   translate: ICoords;
@@ -9,6 +18,14 @@ interface ITranslateController {
   makeTrasform: () => void;
 }
 
+/**
+ * Параметры для инициализации контроллера.
+ * 
+ * @interface ITranslateControllerProps
+ * @property {CanvasRenderingContext2D | null} context - Контекст Canvas.
+ * @property {number} initialScale - Начальный масштаб.
+ * @property {ICoords} initialTranslate - Начальные координаты смещения.
+ */
 interface ITranslateControllerProps {
   context: CanvasRenderingContext2D | null;
   initialScale: number;
@@ -17,6 +34,26 @@ interface ITranslateControllerProps {
 
 const INTERVAL_TIME = 20;
 
+/**
+ * Контроллер для управления трансформацией (масштабирование и перемещение) на Canvas.
+ * Реализует паттерн Singleton для единого экземпляра управления трансформацией.
+ * 
+ * @class TranslateController
+ * @implements {ITranslateController}
+ * 
+ * @property {number} scale - Текущий масштаб (от 0.05 до 1.0+).
+ * @property {ICoords} translate - Текущие координаты смещения (x, y).
+ * @property {CanvasRenderingContext2D | null} context - Контекст Canvas для применения трансформации.
+ * 
+ * @example
+ * const controller = new TranslateController({
+ *   context: canvas.getContext('2d'),
+ *   initialScale: 0.5,
+ *   initialTranslate: { x: 0, y: 0 }
+ * });
+ * controller.setTranslate({ x: 100, y: 50 });
+ * controller.makeTrasform();
+ */
 class TranslateController implements ITranslateController {
   scale = 0.2;
   translate = { x: 0, y: 0 };
@@ -26,6 +63,16 @@ class TranslateController implements ITranslateController {
   private static _instance: TranslateController;
   private interval: ReturnType<typeof setInterval> | undefined;
 
+   /**
+   * Создает экземпляр контроллера трансформации.
+   * 
+   * @param {ITranslateControllerProps} [props] - Опциональные свойства для инициализации.
+   * @param {CanvasRenderingContext2D | null} props.context - Контекст Canvas.
+   * @param {number} props.initialScale - Начальный масштаб.
+   * @param {ICoords} props.initialTranslate - Начальные координаты смещения.
+   * 
+   * @throws {Error} Если props не предоставлены.
+   */
   constructor(props?: ITranslateControllerProps) {
     if (TranslateController._instance) {
       return TranslateController._instance;
@@ -45,11 +92,23 @@ class TranslateController implements ITranslateController {
     TranslateController._instance = this;
   }
 
+  /**
+   * Устанавливает новые координаты смещения.
+   * 
+   * @param {ICoords} coords - Новые координаты (x, y).
+   */
   public setTranslate = (coords: ICoords) => {
     this.translate.x = coords.x;
     this.translate.y = coords.y;
   };
 
+
+  /**
+   * Применяет текущую трансформацию (масштаб и смещение) к контексту Canvas.
+   * 
+   * @example
+   * controller.makeTrasform(); // Применяет трансформацию к canvas
+   */
   public makeTrasform = () => {
     if (this.context) {
       this.context.setTransform(
@@ -90,14 +149,23 @@ class TranslateController implements ITranslateController {
     this.interval = setInterval(intervalFunc, INTERVAL_TIME);
   };
 
+  /**
+   * Увеличивает масштаб на 1% с анимацией.
+   */
   private scaleIn = () => {
     this.scaleFunction(0.01);
   };
 
+  /**
+   * Уменьшает масштаб на 1% с анимацией.
+   */
   private scaleOut = () => {
     this.scaleFunction(-0.01);
   };
 
+  /**
+   * Сбрасывает масштаб к начальному значению.
+   */
   private resetScale = () => {
     this.scale = this.initialScale;
   };
@@ -173,6 +241,12 @@ class TranslateController implements ITranslateController {
     this.scaleFunction(scaleDelta);
   };
 
+  /**
+   * Обрабатывает перемещение через мышь.
+   * 
+   * @param {number} deltaX - Изменение координаты X.
+   * @param {number} deltaY - Изменение координаты Y.
+   */
   private moveWithMouse = (deltaX: number, deltaY: number) => {
     let xDelta: number;
     let yDelta: number;
@@ -193,6 +267,9 @@ class TranslateController implements ITranslateController {
     this.translate.y = this.translate.y + yDelta;
   };
 
+  /**
+   * Устанавливает обработчики событий для управления трансформацией.
+   */
   private setListner = () => {
     let prevX: number | undefined;
     let prevY: number | undefined;

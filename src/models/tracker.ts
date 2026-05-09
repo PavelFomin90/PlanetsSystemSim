@@ -8,6 +8,15 @@ interface ITracker {
   resetTracker: () => void;
 }
 
+/**
+ * Класс для отслеживания тела в симуляции.
+ * 
+ * Реализует паттерн Singleton и автоматически центрирует камеру на выбранном теле.
+ * Использует `TranslateController` для управления трансформацией.
+ * 
+ * @class Tracker
+ * @implements {ITracker}
+ */
 class Tracker implements ITracker {
   private trackerId: number | null = null;
   trackObject: IDot | null = null;
@@ -23,6 +32,13 @@ class Tracker implements ITracker {
     Tracker._instance = this;
   }
 
+  /**
+   * Начинает отслеживание тела.
+   * 
+   * Если тело задано, устанавливает его как `trackObject` и запускает анимацию центрирования.
+   * 
+   * @param {IDot | null} trackObject - Тело для отслеживания или `null` для остановки.
+   */
   public track = (trackObject: IDot | null) => {
     if (trackObject) {
       this.setTrackObject(trackObject);
@@ -30,6 +46,11 @@ class Tracker implements ITracker {
     }
   };
 
+  /**
+   * Останавливает отслеживание и сбрасывает текущее тело.
+   * 
+   * Отменяет анимацию центрирования.
+   */
   public resetTracker = () => {
     this.setTrackObject(null);
     this.trackerId && cancelAnimationFrame(this.trackerId);
@@ -40,6 +61,12 @@ class Tracker implements ITracker {
     this.trackObject = trackObject;
   };
 
+  /**
+   * Центрирует камеру на текущем отслеживаемом теле.
+   * 
+   * Запускается через `requestAnimationFrame` и выполняется постоянно, пока `trackObject` не будет сброшен.
+   * Использует `TranslateController.setTranslate` для перемещения вида.
+   */
   private trackPlanet = () => {
     if (!this.trackObject) {
       return;
