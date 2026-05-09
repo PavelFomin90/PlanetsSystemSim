@@ -46,114 +46,96 @@
 - Адаптивность: панель корректно отображается на экранах разного размера.
 - Локализация: пока на русском языке, но структура позволяет легко добавить другие языки.
 
-## Техническая реализация (предварительный план)
+## Техническая реализация
 
-### 1. HTML
+### Компонентная архитектура
 
-Добавить контейнер для панели в `index.html`:
+Вместо инлайновых HTML/CSS в `index.html`, реализована компонентная модель с разделением по папкам.
 
-```html
-<div id="info-panel" class="info-panel hidden">
-  <div class="info-row"><strong>Имя:</strong> <span id="info-name"></span></div>
-  <div class="info-row"><strong>Масса:</strong> <span id="info-mass"></span></div>
-  <div class="info-row"><strong>Радиус:</strong> <span id="info-radius"></span></div>
-  <div class="info-row"><strong>Цвет:</strong> <span id="info-color" class="color-box"></span></div>
-  <div class="info-row"><strong>Скорость:</strong> <span id="info-velocity"></span></div>
-  <div class="info-row"><strong>Расстояние до центра:</strong> <span id="info-distance"></span></div>
-</div>
+### 1. Структура компонентов
+
+```
+src/ui/components/
+├── BasePanel/
+│   ├── BasePanel.ts
+│   └── index.ts
+└── InfoPanel/
+    ├── InfoPanel.ts
+    ├── InfoPanel.css
+    └── index.ts
 ```
 
-### 2. CSS
+### 2. BasePanel
 
-Добавить стили в `<style>` секцию `index.html` или в отдельный файл:
-
-```css
-.info-panel {
-  position: absolute;
-  top: 20px;
-  right: 20px;
-  background: rgba(0, 0, 0, 0.7);
-  color: white;
-  padding: 15px;
-  border-radius: 8px;
-  font-family: Arial, sans-serif;
-  font-size: 14px;
-  min-width: 180px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
-  backdrop-filter: blur(2px);
-}
-
-.info-panel.hidden {
-  display: none;
-}
-
-.info-row {
-  margin-bottom: 8px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.color-box {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  border-radius: 50%;
-  margin-left: 8px;
-}
-```
-
-### 3. TypeScript
-
-В `src/index.ts`:
-
-- Найти или создать элементы панели при инициализации.
-- При вызове `trackerInstance.track(planet)` — обновлять содержимое панели.
-- При вызове `trackerInstance.resetTracker()` — скрывать панель.
-- Реализовать вычисление расстояния до центра экрана.
-
-Пример обновления:
+Базовый класс для всех панелей:
 
 ```ts
-function updateInfoPanel(planet: IDot | null) {
-  const panel = document.getElementById('info-panel');
-  if (!planet) {
-    panel?.classList.add('hidden');
-    return;
+export class BasePanel {
+  protected element: HTMLElement;
+
+  constructor(tag: string = 'div', className: string = '') {
+    this.element = document.createElement(tag);
+    if (className) {
+      this.element.className = className;
+    }
   }
 
-  const centerX = window.innerWidth / 2;
-  const centerY = window.innerHeight / 2;
-  const distance = Math.sqrt(
-    Math.pow(planet.coords.x - centerX, 2) + Math.pow(planet.coords.y - centerY, 2)
-  );
+  render(parent: HTMLElement): void {
+    parent.appendChild(this.element);
+  }
 
-  document.getElementById('info-name')!.textContent = planet.name;
-  document.getElementById('info-mass')!.textContent = planet.mass.toFixed(2);
-  document.getElementById('info-radius')!.textContent = `${planet.radius} px`;
-  document.getElementById('info-color')!.style.backgroundColor = planet.color;
-  document.getElementById('info-velocity')!.textContent = planet.velocity.length.toFixed(2);
-  document.getElementById('info-distance')!.textContent = distance.toFixed(2);
+  show(): void {
+    this.element.style.display = 'block';
+  }
 
-  panel?.classList.remove('hidden');
+  hide(): void {
+    this.element.style.display = 'none';
+  }
+
+  destroy(): void {
+    this.element.remove();
+  }
 }
 ```
 
-Вызов в обработчике:
+### 3. InfoPanel
+
+Панель информации, наследующаяся от `BasePanel`:
+
+- Отображает: имя, массу, радиус, цвет, скорость, расстояние до центра.
+- Автоматически появляется/скрывается при отслеживании.
+- Стили инкапсулированы в `InfoPanel.css`.
+
+### 4. Интеграция в index.ts
 
 ```ts
-trackerInstance.track = (planet) => {
-  if (planet) {
-    // ... текущая логика отслеживания
-    updateInfoPanel(planet);
-  }
-};
+import { InfoPanel } from "./ui/components/InfoPanel";
 
-trackerInstance.resetTracker = () => {
-  // ... сброс отслеживания
-  updateInfoPanel(null);
-};
+// ...
+const infoPanel = new InfoPanel();
+infoPanel.render(document.body);
+
+// При клике на планету
+trackerInstance.track(planet);
+infoPanel.update(planet);
+
+// При отключении отслеживания
+trackerInstance.resetTracker();
+infoPanel.update(null);
 ```
+
+### 5. Сборка
+
+В `webpack.config.js` добавлены загрузчики для CSS:
+
+```js
+{
+  test: \/\\.css$/,
+  use: ['style-loader', 'css-loader']
+}
+```
+
+Зависимости: `css-loader`, `style-loader`.
 
 ## Дальнейшие улучшения (опционально)
 

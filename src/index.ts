@@ -5,6 +5,7 @@ import { System } from "./models/system";
 import { Tracker } from "./models/tracker";
 import { Drawer } from "./models/draw";
 import { getCanvasClickCoors } from "./utils/canvas/handlers";
+import { InfoPanel } from "./ui/components/InfoPanel/";
 
 const system = new System();
 const drawer = new Drawer(null); // Создаем экземпляр Drawer с контекстом холста, который будет установлен позже
@@ -40,6 +41,8 @@ if (canvas) {
   });
 
   const trackerInstance = new Tracker();
+  const infoPanel = new InfoPanel();
+  infoPanel.render(document.body);
 
   const checkPlanetClick = (planet: IDot, clickCoords: ICoords) => {
     const planetCoord = planet.coords;
@@ -64,9 +67,11 @@ if (canvas) {
     system.planets.forEach((planet) => {
       if (checkPlanetClick(planet, coords)) {
         trackerInstance.track(planet);
+        infoPanel.update(planet);
       } else {
         if (trackerInstance.trackObject === planet) {
           trackerInstance.resetTracker();
+          infoPanel.update(null);
         }
       }
     });
