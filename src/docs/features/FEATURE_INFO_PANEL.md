@@ -84,12 +84,26 @@ export class BasePanel {
     parent.appendChild(this.element);
   }
 
+  /**
+   * Показывает панель с анимацией.
+   */
   show(): void {
     this.element.style.display = 'block';
+    // Небольшая задержка для корректной работы transition
+    requestAnimationFrame(() => {
+      this.element.style.opacity = '1';
+    });
   }
 
+  /**
+   * Скрывает панель с анимацией.
+   */
   hide(): void {
-    this.element.style.display = 'none';
+    this.element.style.opacity = '0';
+    // Скрываем элемент после завершения анимации
+    setTimeout(() => {
+      this.element.style.display = 'none';
+    }, 300);
   }
 
   destroy(): void {
@@ -102,7 +116,7 @@ export class BasePanel {
 
 Панель информации, наследующаяся от `BasePanel`:
 
-- Отображает: имя, массу, радиус, цвет, скорость, расстояние до центра.
+- Отображает: имя, массу, радиус, цвет, скорость.
 - Автоматически появляется/скрывается при отслеживании.
 - Стили инкапсулированы в `InfoPanel.css`.
 
@@ -130,7 +144,7 @@ infoPanel.update(null);
 
 ```js
 {
-  test: \/\\.css$/,
+  test: /\.css$/,
   use: ['style-loader', 'css-loader']
 }
 ```
@@ -141,9 +155,7 @@ infoPanel.update(null);
 
 - Добавить вектор скорости (стрелка или числа по осям).
 - Показывать родительское тело (вокруг чего вращается).
-- Анимация появления/исчезновения.
 - Кнопка закрытия панели.
-- Настройка видимости в меню.
 
 ## Завершение
 

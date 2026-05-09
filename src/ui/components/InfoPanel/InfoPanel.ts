@@ -1,11 +1,7 @@
 import { BasePanel } from "../BasePanel";
 import { IDot } from "../../../models/dot";
 
-// Импортируем стили — Webpack включит их в сборку
 import './InfoPanel.css';
-
-// Импорт компонентов не требует изменений — Webpack разрешает путь правильно
-
 
 /**
  * Панель информации об отслеживаемом объекте.
@@ -17,7 +13,6 @@ export class InfoPanel extends BasePanel {
   private radiusEl: HTMLElement;
   private colorEl: HTMLElement;
   private velocityEl: HTMLElement;
-  private distanceEl: HTMLElement;
 
   constructor() {
     super('div', 'info-panel');
@@ -28,7 +23,6 @@ export class InfoPanel extends BasePanel {
     this.radiusEl = this.createRow('Радиус:', 'info-radius');
     this.colorEl = this.createRow('Цвет:', 'info-color', 'color-box');
     this.velocityEl = this.createRow('Скорость:', 'info-velocity');
-    this.distanceEl = this.createRow('Расстояние до центра:', 'info-distance');
 
     // Скрываем по умолчанию
     this.hide();
@@ -67,18 +61,12 @@ export class InfoPanel extends BasePanel {
       return;
     }
 
-    const centerX = window.innerWidth / 2;
-    const centerY = window.innerHeight / 2;
-    const distance = Math.sqrt(
-      Math.pow(planet.coords.x - centerX, 2) + Math.pow(planet.coords.y - centerY, 2)
-    );
 
     this.nameEl.textContent = planet.name;
     this.massEl.textContent = planet.mass.toFixed(2);
     this.radiusEl.textContent = `${planet.radius} px`;
     (this.colorEl as HTMLElement).style.backgroundColor = planet.color;
     this.velocityEl.textContent = planet.velocity.length.toFixed(2);
-    this.distanceEl.textContent = distance.toFixed(2);
 
     this.show();
   }

@@ -20,17 +20,25 @@ export class BasePanel {
   }
 
   /**
-   * Показывает панель.
+   * Показывает панель с анимацией.
    */
   show(): void {
     this.element.style.display = 'block';
+    // Небольшая задержка для корректной работы transition
+    requestAnimationFrame(() => {
+      this.element.style.opacity = '1';
+    });
   }
 
   /**
-   * Скрывает панель.
+   * Скрывает панель с анимацией.
    */
   hide(): void {
-    this.element.style.display = 'none';
+    this.element.style.opacity = '0';
+    // Скрываем элемент после завершения анимации
+    setTimeout(() => {
+      this.element.style.display = 'none';
+    }, 300);
   }
 
   /**
