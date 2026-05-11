@@ -8,6 +8,7 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from "./react/App";
 import { DotObservable } from "./models/dotObservable";
+import "./styles.css";
 
 // Создание stores
 const systemStore = new SystemStore();
@@ -42,7 +43,7 @@ if (canvas) {
     initialTranslate: { x: 0, y: 0 },
   });
   // Создание интеграции
-  const _canvasIntegration = new CanvasIntegration(
+  const canvasIntegration = new CanvasIntegration(
     drawer,
     tracker,
     systemStore,
@@ -50,7 +51,6 @@ if (canvas) {
     simulationStore
   );
   void _translateInstance;
-  void _canvasIntegration;
 
   // Настройка размеров
   canvas.width = window.innerWidth - 4;
@@ -61,6 +61,15 @@ if (canvas) {
   });
   // Запуск симуляции
   simulationStore.start();
+  canvasIntegration.startRenderLoop();
+
+  // Запуск обновления планет
+  setInterval(() => {
+    if (simulationStore.isRunning) {
+      canvasIntegration.updatePlanets();
+    }
+  }, 30);
+
   // Рендер React приложения
   const appElement = document.getElementById('app');
   if (appElement) {
