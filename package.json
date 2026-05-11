@@ -17,8 +17,8 @@
     "node": ">=14.19.0"
   },
   "dependencies": {
-    "mobx": "^6.3.19",
-    "mobx-react-lite": "^3.2.1"
+    "mobx": "^6.10.0",
+    "mobx-react-lite": "^4.0.5"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
