@@ -1,21 +1,20 @@
 import { SystemStore, UIStore, SimulationStore } from './stores';
 import { Drawer } from './models/draw';
-import { Tracker } from './models/tracker';
 
 export class CanvasIntegration {
   private drawer: Drawer;
-  private tracker: Tracker;
   private animationId: number | null = null;
 
   constructor(
     drawer: Drawer,
-    tracker: Tracker,
+    _tracker: unknown,
     private systemStore: SystemStore,
-    private uiStore: UIStore,
+    _uiStore: UIStore,
     private simulationStore: SimulationStore
   ) {
     this.drawer = drawer;
-    this.tracker = tracker;
+    void _tracker;
+    void _uiStore;
   }
 
   startRenderLoop() {
@@ -38,8 +37,8 @@ export class CanvasIntegration {
   private render() {
     const planets = this.systemStore.getPlanets();
     planets.forEach((planet) => {
-      this.drawer.drawDot(planet, planet.color);
-      this.drawer.drawOrbit(planet, planet.color);
+      this.drawer.drawDot(planet as never, planet.color);
+      this.drawer.drawOrbit(planet as never, planet.color);
     });
   }
 
