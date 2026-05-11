@@ -1,12 +1,12 @@
 import { makeAutoObservable } from 'mobx';
-import { IDot } from '../models/dot';
+import { DotObservable } from '../models/dotObservable';
 export class UIStore {
-  selectedPlanet: IDot | null = null;
+  selectedPlanet: DotObservable | null = null;
   isTracking: boolean = false;
   constructor() {
     makeAutoObservable(this);
   }
-  selectPlanet(planet: IDot | null) {
+  selectPlanet(planet: DotObservable | null) {
     this.selectedPlanet = planet;
   }
   setTracking(isTracking: boolean) {

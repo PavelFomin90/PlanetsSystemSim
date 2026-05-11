@@ -16,8 +16,8 @@ export class DotObservable {
   constructor(props: IDotStartProps) {
     const { coords, velocity, acceleration, mass, color, radius, name } = props;
     this.coords = coords || { x: 0, y: 0 };
-    this.velocity = velocity || new Vector(0, 0);
-    this.acceleration = acceleration || new Vector(0, 0);
+    this.velocity = (velocity as Vector) || new Vector(0, 0);
+    this.acceleration = (acceleration as Vector) || new Vector(0, 0);
     this.mass = mass || 0;
     this.color = color || "green";
     this.radius = radius || 15;

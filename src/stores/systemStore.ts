@@ -1,11 +1,11 @@
 import { makeAutoObservable } from 'mobx';
-import { IDot } from '../models/dot';
+import { DotObservable } from '../models/dotObservable';
 export class SystemStore {
-  planets: IDot[] = [];
+  planets: DotObservable[] = [];
   constructor() {
     makeAutoObservable(this);
   }
-  addPlanet(planet: IDot) {
+  addPlanet(planet: DotObservable) {
     this.planets.push(planet);
   }
   getPlanets() {

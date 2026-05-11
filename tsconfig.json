@@ -39,6 +39,7 @@
       /* Enable error reporting for fallthrough cases in switch statements. */
       "noImplicitOverride": true,
       /* Ensure overriding members in derived classes are marked with an override modifier. */
+      "experimentalDecorators": true,
       /* Module Resolution Options */
       "esModuleInterop": true,
       /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
