@@ -43,8 +43,13 @@
       "esModuleInterop": true,
       /* Enables emit interoperability between CommonJS and ES Modules via creation of namespace objects for all imports. Implies 'allowSyntheticDefaultImports'. */
       "allowSyntheticDefaultImports": true,
-      "baseUrl": "./"
+      "baseUrl": "./",
       /* Base directory to resolve non-absolute module names. */
+      "paths": {
+        "@models/*": ["src/models/*"],
+        "@utils/*": ["src/utils/*"],
+        "@components/*": ["src/ui/components/*"]
+      }
     },
     "exclude": [
       "node_modules",

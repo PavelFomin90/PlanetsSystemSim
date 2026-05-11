@@ -10,12 +10,6 @@ export class BasePanel {
     if (className) {
       this.element.className = className;
     }
-    
-    // Изначально скрываем панель
-    this.element.style.display = 'none';
-    
-    // Добавляем в body по умолчанию
-    document.body.appendChild(this.element);
   }
 
   /**

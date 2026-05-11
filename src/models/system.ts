@@ -29,6 +29,14 @@ class System implements ISystem {
   addPlanet(planet: IDot) {
     this.planets.push(planet);
   }
+
+  /**
+   * Возвращает копию массива планет
+   * @returns {IDot[]} Массив всех планет в системе
+   */
+  getPlanets(): IDot[] {
+    return [...this.planets];
+  }
 }
 
 export { System };
