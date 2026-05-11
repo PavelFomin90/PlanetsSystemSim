@@ -18,13 +18,17 @@
   },
   "dependencies": {
     "mobx": "^6.10.0",
-    "mobx-react-lite": "^4.0.5"
+    "mobx-react-lite": "^4.0.5",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/eslint-parser": "^7.17.0",
     "@rushstack/eslint-patch": "^1.1.1",
     "@types/jest": "^30.0.0",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0",
     "@typescript-eslint/eslint-plugin": "^5.57.1",
     "@typescript-eslint/parser": "^5.57.1",
     "confusing-browser-globals": "^1.0.11",
