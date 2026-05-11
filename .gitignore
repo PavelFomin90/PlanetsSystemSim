@@ -1,3 +1,39 @@
+# Сгенерированные файлы
+coverage/
+
+# Node.js
 node_modules/
-.DS_store
-.vscode/
+npm-debug.log
+yarn-error.log
+yarn-debug.log
+.pnpm-debug.log
+
+# Build
+/dist
+/build
+/out
+
+# IDE
+.idea
+.vscode
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+
+# Logs
+logs
+*.log
+
+# Testing
+coverage/
+.nyc_output/
+
+# Misc
+.DS_Store
+Thumbs.db
+
+# Worktrees
+.worktrees

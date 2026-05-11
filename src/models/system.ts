@@ -5,6 +5,15 @@ interface ISystem {
   addPlanet: (planet: IDot) => void;
 }
 
+/**
+ * Класс, представляющий систему тел (планет, спутников и звёзд).
+ * 
+ * Управляет коллекцией объектов `Dot`, обеспечивая их хранение и добавление.
+ * Используется как контейнер для физическо�� симуляции.
+ * 
+ * @class System
+ * @implements {ISystem}
+ */
 class System implements ISystem {
   planets: IDot[];
 
@@ -12,8 +21,21 @@ class System implements ISystem {
     this.planets = [];
   }
 
+  /**
+   * Добавляет тело в систему.
+   * 
+   * @param {IDot} planet - Тело (планета, спутник и т.д.), которое нужно добавить.
+   */
   addPlanet(planet: IDot) {
     this.planets.push(planet);
+  }
+
+  /**
+   * Возвращает копию массива планет
+   * @returns {IDot[]} Массив всех планет в системе
+   */
+  getPlanets(): IDot[] {
+    return [...this.planets];
   }
 }
 

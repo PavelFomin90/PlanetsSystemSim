@@ -1,0 +1,9 @@
+{  "retrievalSettings": {
+    "indexing": {
+      "enabled": true,
+      "filetypes": [".py", ".js", ".jsx", ".ts", ".tsx", ".java", ".go", ".rs", ".rb", ".php", ".md"],
+      "includePaths": ["src/**", "src/index.ts"],
+      "excludePatterns": ["node_modules/**", "dist/**"]
+    }
+  }
+}
