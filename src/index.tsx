@@ -5,7 +5,7 @@ import { Drawer } from "./models/draw";
 import { Tracker } from "./models/tracker";
 import { CanvasIntegration } from "./canvasIntegration";
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import App from "./react/App";
 import { DotObservable } from "./models/dotObservable";
 
@@ -64,15 +64,15 @@ if (canvas) {
   // Рендер React приложения
   const appElement = document.getElementById('app');
   if (appElement) {
-    ReactDOM.render(
+    const root = createRoot(appElement);
+    root.render(
       <React.StrictMode>
         <App
           systemStore={systemStore}
           uiStore={uiStore}
           simulationStore={simulationStore}
         />
-      </React.StrictMode>,
-      appElement
+      </React.StrictMode>
     );
   }
 }

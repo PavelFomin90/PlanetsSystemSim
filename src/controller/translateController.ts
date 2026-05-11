@@ -75,6 +75,12 @@ class TranslateController implements ITranslateController {
    */
   constructor(props?: ITranslateControllerProps) {
     if (TranslateController._instance) {
+      if (props && props.context) {
+        TranslateController._instance.context = props.context;
+        TranslateController._instance.scale = props.initialScale;
+        TranslateController._instance.initialScale = props.initialScale;
+        TranslateController._instance.translate = props.initialTranslate;
+      }
       return TranslateController._instance;
     }
 
@@ -83,8 +89,6 @@ class TranslateController implements ITranslateController {
       this.scale = props.initialScale;
       this.initialScale = props.initialScale;
       this.translate = props.initialTranslate;
-    } else {
-      console.error("TranslateController: props was not provided");
     }
 
     this.setListner();
