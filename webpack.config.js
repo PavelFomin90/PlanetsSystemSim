@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: './src/index.tsx',
@@ -30,6 +31,10 @@ module.exports = {
   },
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
+    new HtmlWebpackPlugin({
+      template: './index.html',
+      filename: 'index.html',
+    }),
   ],
   devServer: {
     port: 4200,
@@ -37,5 +42,6 @@ module.exports = {
     static: {
         directory: path.join(__dirname, 'dist'),
     },
+    historyApiFallback: true,
   },
 };
