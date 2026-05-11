@@ -16,6 +16,10 @@
   "engines": {
     "node": ">=14.19.0"
   },
+  "dependencies": {
+    "mobx": "^6.3.19",
+    "mobx-react-lite": "^3.2.1"
+  },
   "devDependencies": {
     "@babel/core": "^7.21.4",
     "@babel/eslint-parser": "^7.17.0",
