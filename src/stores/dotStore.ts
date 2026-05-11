@@ -1,16 +1,17 @@
 import { makeAutoObservable } from 'mobx';
-import { IDot, IDotStartProps } from '../models/dot';
+import { DotObservable } from '../models/dotObservable';
+
 export class DotStore {
-  dot: IDot | null = null;
+  dot: DotObservable | null = null;
   constructor() {
     makeAutoObservable(this);
   }
-  setDot(dot: IDot) {
+  setDot(dot: DotObservable) {
     this.dot = dot;
   }
   updateCoords(coords: { x: number; y: number }) {
     if (this.dot) {
-      this.dot.coords = coords;
+      this.dot.setCoords(coords);
     }
   }
 }
